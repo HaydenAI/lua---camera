@@ -1,6 +1,0 @@
-/home/maym86/torch/install/../../../../usr/local/lua/camera/init.lua
-/home/maym86/torch/install/lua/camera/init.lua
-/home/maym86/torch/install/../../../../usr/local/lib/libcamopencv.so
-/home/maym86/torch/install/../../../../usr/local/lua/camopencv/init.lua
-/home/maym86/torch/install/../../../../usr/local/lib/libv4l.so
-/home/maym86/torch/install/../../../../usr/local/lua/v4l/init.lua

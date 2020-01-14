@@ -2,7 +2,7 @@ package = "camera"
 version = "1.1-0"
 
 source = {
-   url = "git://github.com/clementfarabet/lua---camera",
+   url = "git://github.com/HaydenAI/lua---camera",
 }
 
 description = {
@@ -10,7 +10,7 @@ description = {
    detailed = [[
 Uses OpenCV on MacOS and video4linux2 on Linux to proved the low level access to the camera hardware.
    ]],
-   homepage = "https://github.com/clementfarabet/lua---camera",
+   homepage = "https://github.com/HaydenAI/lua---camera",
    license = "BSD"
 }
 
@@ -29,5 +29,5 @@ cd build;
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$(LUA_BINDIR)/.." -DCMAKE_INSTALL_PREFIX="$(PREFIX)"; 
 $(MAKE)
    ]],
-   install_command = "cd build && $(MAKE) install"
+   install_command = "cd build && sudo $(MAKE) install"
 }
