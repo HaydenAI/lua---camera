@@ -13,12 +13,13 @@ local Camera = torch.class('image.Camera')
 
 function Camera:__init(...)
    -- parse args
-   local args, idx, width, height = xlua.unpack(
+   local args, idx, width, height, stream = xlua.unpack(
       {...},
       'image.Camera', nil,
       {arg='idx', type='number', help='camera index', default=0},
       {arg='width', type='number', help='frame width', default=640},
-      {arg='height', type='number', help='frame height', default=480}
+      {arg='height', type='number', help='frame height', default=480},
+      {arg='stream', type='string', help='Stream URL', default=''}
    )
 
    -- init vars
@@ -28,7 +29,7 @@ function Camera:__init(...)
    self.idx = idx
 
    -- init capture
-   self.fidx = libcamopencv.initCam(idx, width, height)
+   self.fidx = libcamopencv.initCam(idx, width, height, stream)
 end
 
 function Camera:forward()
