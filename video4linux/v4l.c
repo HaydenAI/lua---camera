@@ -37,7 +37,7 @@
 typedef struct
 {
     int nbuffers;
-    char device[80];
+    char device[1024];
     void *buffers[MAX_BUFFERS];
     int sizes[MAX_BUFFERS];
     int started;
