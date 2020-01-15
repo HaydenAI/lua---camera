@@ -46,7 +46,7 @@ static int l_initCam(lua_State *L) {
     }
 
     // if number, open a camera device
-    if (lua_isnumber(L, 1)) {
+    if (lua_isnumber(L, 1) || lua_isstring(L, 4)) {
         printf("initializing camera\n");
         const int idx = lua_tonumber(L, 1);
         const std::string stream = lua_tostring(L, 4);

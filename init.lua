@@ -8,7 +8,7 @@ require 'xlua'
 ----------------------------------
 -- load camera driver based on OS
 ----------------------------------
-useOpenCV = true
+--useOpenCV = true
 if useOpenCV then 
    if not xlua.require 'camopencv' then
       xlua.error('failed to load camopencv wrapper: verify that camopencv is installed')
