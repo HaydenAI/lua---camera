@@ -396,7 +396,13 @@ static int l_init (lua_State *L) {
     // camera device id
     if (lua_isnumber(L, 1)) camid = lua_tonumber(L, 1);
     camera = &Cameras[camid];
-    sprintf(camera->device,"/dev/video%d",camid);
+
+    if(camid == -1) {
+        sprintf(camera->device,
+                "udpsrc port=5001 ! application/x-rtp,media=video,payload=26,clock-rate=90000,encoding-name=JPEG,framerate=30/1 ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink");
+    } else {
+        sprintf(camera->device, "/dev/video%d", camid);
+    }
     printf("Initializing device: %s\n", camera->device);
 
     // width at which to grab
