@@ -97,17 +97,19 @@ extern "C"  int l_grabFrame(lua_State *L) {
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
     int m2 = tensor->stride[0];
+
+    int channels = frame.channels();
     unsigned char *src = (unsigned char *) frame.data;
     float *dst = THFloatTensor_data(tensor);
     int i, j, k;
     for (i = 0; i < frame.rows; i++) {
         for (j = 0, k = 0; j < frame.cols; j++, k += m1) {
             // red:
-            dst[k] = src[i * frame.step + j * frame.channels() + 2] / 255.;
+            dst[k] = src[i * frame.step + j * channels + 2] / 255.;
             // green:
-            dst[k + m2] = src[i * frame.step + j * frame.channels() + 1] / 255.;
+            dst[k + m2] = src[i * frame.step + j * channels + 1] / 255.;
             // blue:
-            dst[k + 2 * m2] = src[i * frame.step + j * frame.channels() + 0] / 255.;
+            dst[k + 2 * m2] = src[i * frame.step + j * channels + 0] / 255.;
         }
         dst += m0;
     }
