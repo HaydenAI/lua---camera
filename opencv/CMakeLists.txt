@@ -1,6 +1,6 @@
 
 
-FIND_PACKAGE( OpenCV )
+FIND_PACKAGE( OpenCV REQUIRED)
 
 IF(OpenCV_FOUND)
   SET(src opencv.cpp)

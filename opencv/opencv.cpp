@@ -12,19 +12,9 @@
 #include <luaT.h>
 #include <TH.h>
 
-#include <dirent.h>
-#include <errno.h>
-#include <time.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <signal.h>
-#include <pthread.h>
 
 #include <opencv2/opencv.hpp>
 
@@ -35,7 +25,7 @@ static cv::VideoCapture cap;
 static cv::Mat frame;
 static int fidx = 0;
 
-static int l_initCam(lua_State *L) {
+extern "C" int l_initCam(lua_State *L) {
     // args
     //int width = lua_tonumber(L, 2);
     //int height = lua_tonumber(L, 3);
@@ -49,8 +39,11 @@ static int l_initCam(lua_State *L) {
     if (lua_isnumber(L, 1) || lua_isstring(L, 4)) {
         printf("initializing camera\n");
         const int idx = lua_tonumber(L, 1);
-        if (idx == -1) {
+        if (idx < 0) {
             const std::string stream = lua_tostring(L, 4);
+            if(stream.empty()) {
+                perror("Stream string not set");
+            }
             cap.open(stream, cv::CAP_GSTREAMER);
         } else {
             cap.open(idx);
@@ -86,7 +79,7 @@ static int l_initCam(lua_State *L) {
 }
 
 // frame grabber
-static int l_grabFrame(lua_State *L) {
+extern "C"  int l_grabFrame(lua_State *L) {
     // Get Tensor's Info
     const int idx = lua_tonumber(L, 1);
     THFloatTensor *tensor = (THFloatTensor *) luaT_toudata(L, 2, "torch.FloatTensor");
@@ -122,21 +115,20 @@ static int l_grabFrame(lua_State *L) {
     return 0;
 }
 
-static int l_releaseCam(lua_State *L) {
-    const int idx = lua_tonumber(L, 1);
+extern "C"  int l_releaseCam(lua_State *L) {
     cap.release();
     return 0;
 }
 
 // Register functions
-static const struct luaL_reg opencv[] = {
+const struct luaL_reg opencv[] = {
         {"initCam",    l_initCam},
         {"grabFrame",  l_grabFrame},
         {"releaseCam", l_releaseCam},
         {NULL, NULL}  /* sentinel */
 };
 
-int luaopen_libcamopencv(lua_State *L) {
+extern "C" int luaopen_libcamopencv(lua_State *L) {
     luaL_openlib(L, "libcamopencv", opencv, 0);
     return 1;
 }
