@@ -89,7 +89,6 @@ extern "C" int l_initCam(lua_State *L) {
     cap_thread = std::thread([&]() {
         // grab frame
             while(!done){
-                std::cout << "asdasdasda" << std::endl;
                 cv::Mat img;
                 cap.read(img);
                 if (img.empty()) {
