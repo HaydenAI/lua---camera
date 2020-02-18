@@ -47,6 +47,11 @@ function Camera:forward()
    return self.tensortyped
 end
 
+
+function Camera:show(buffer)
+   libcamopencv.show(buffer)
+end
+
 function Camera:stop()
   libcamopencv.releaseCam(self.fidx)
   print('stopping camera')

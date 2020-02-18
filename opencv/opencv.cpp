@@ -152,6 +152,38 @@ extern "C"  int l_grabFrame(lua_State *L) {
     return 0;
 }
 
+extern "C"  int l_show(lua_State *L) {
+    const THFloatTensor* tensor = static_cast<const THFloatTensor *>(lua_topointer(L, 1));
+    cv::Mat local_frame(width, height, CV_8UC3);
+
+    int channels = 3;
+
+    float *src = THFloatTensor_data(tensor);
+
+    unsigned char *dst = (unsigned char *) local_frame.data;
+    int m0 = tensor->stride[1];
+    int m1 = tensor->stride[2];
+    int m2 = tensor->stride[0];
+
+    int i, j, k;
+    for (i = 0; i < local_frame.rows; i++) {
+        for (j = 0, k = 0; j < local_frame.cols; j++, k += m1) {
+            // red:
+            dst[k] = src[i * local_frame.step + j * channels + 2] / 255.;
+            // green:
+            dst[k + m2] = src[i * local_frame.step + j * channels + 1] / 255.;
+            // blue:
+            dst[k + 2 * m2] = src[i * local_frame.step + j * channels + 0] / 255.;
+        }
+        dst += m0;
+    }
+
+
+    cv::imshow("Result", local_frame);
+    cv::waitKey(1);
+
+}
+
 extern "C"  int l_releaseCam(lua_State *L) {
 
     done = true;
@@ -167,6 +199,7 @@ const struct luaL_reg opencv[] = {
         {"initCam",    l_initCam},
         {"grabFrame",  l_grabFrame},
         {"releaseCam", l_releaseCam},
+        {"show", l_show},
         {NULL, NULL}  /* sentinel */
 };
 
