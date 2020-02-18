@@ -39,7 +39,7 @@ function Camera:start()
 end
 
 function Camera:forward()
-   libcamopencv.grabFrame(self.fidx, self.buffer)
+   libcamopencv.grabFrame(self.fidx, self.buffer, self.width, self.height)
    if self.tensorsized:size(2) ~= self.buffer:size(2) or self.tensorsized:size(3) ~= self.buffer:size(3) then
       image.scale(self.tensorsized, self.buffer)
    else
@@ -55,7 +55,7 @@ end
 
 
 function Camera:convert(min, max, buffer)
-   libcamopencv.convert(min, max, buffer)
+   libcamopencv.convert(min, max, buffer, self.width, self.height, 3)
 end
 
 function Camera:stop()

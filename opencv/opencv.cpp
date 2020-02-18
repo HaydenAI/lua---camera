@@ -33,16 +33,14 @@ std::thread cap_thread;
 std::mutex cap_mutex;
 std::atomic_bool done;
 
-int width;
-int height;
+
 
 extern "C" int l_initCam(lua_State *L) {
 
     done = false;
 
     // args
-    width = lua_tonumber(L, 2);
-    height = lua_tonumber(L, 3);
+
 
     // max allocs ?
     if (fidx == MAXIDX) {
@@ -113,6 +111,8 @@ extern "C"  int l_grabFrame(lua_State *L) {
     // Get Tensor's Info
     const int idx = lua_tonumber(L, 1);
     THFloatTensor *tensor = (THFloatTensor *) luaT_toudata(L, 2, "torch.FloatTensor");
+    int width = lua_tonumber(L, 3);
+    int height = lua_tonumber(L, 4);
 
     std::unique_lock<std::mutex> guard(cap_mutex);
     cv::Mat local_frame = frame.clone();
@@ -157,8 +157,9 @@ extern "C"  int l_convert(lua_State *L) {
     float min = lua_tonumber(L, 1);
     float max = lua_tonumber(L, 2);
     THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 3, "torch.DoubleTensor");
-
-    int channels = 3;
+    int width = lua_tonumber(L, 4);
+    int height = lua_tonumber(L, 5);
+    int channels = lua_tonumber(L, 6);
 
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
