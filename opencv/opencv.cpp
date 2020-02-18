@@ -95,7 +95,7 @@ extern "C" int l_initCam(lua_State *L) {
 		        perror("could not query OpenCV capture");
 		    }
 		    guard.unlock();
-		    cv::waitKey(50)
+		    cv::waitKey(50);
     	}
 
     });
@@ -112,7 +112,6 @@ extern "C"  int l_grabFrame(lua_State *L) {
 
     std::unique_lock<std::mutex> guard(cap_mutex);
     cv::Mat local_frame = frame.clone();
-
     guard.unlock();
     // resize given tensor
     THFloatTensor_resize3d(tensor, 3, local_frame.rows, local_frame.cols);
