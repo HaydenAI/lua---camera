@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC  -fopenmp -g  -shared  -o libv4l.so CMakeFiles/v4l.dir/v4l.c.o  -L/home/maym86/torch/install/lib -Wl,-rpath,/home/maym86/torch/install/lib::::::::::::::: -lluaT /home/maym86/torch/install/lib/libTH.so.0 -lopenblas -lrt -lm 

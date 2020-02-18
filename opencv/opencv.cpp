@@ -19,11 +19,18 @@
 #include <opencv2/opencv.hpp>
 
 #include <highgui.h>
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 #define MAXIDX 100
 static cv::VideoCapture cap;
-static cv::Mat frame;
 static int fidx = 0;
+static cv::Mat frame;
+
+std::thread cap_thread;
+std::mutex cap_mutex;
+std::atomic_bool done;
 
 extern "C" int l_initCam(lua_State *L) {
     // args
@@ -75,7 +82,26 @@ extern "C" int l_initCam(lua_State *L) {
     // next
     lua_pushnumber(L, fidx);
     fidx++;
+
+
+
+    cap_thread = std::thread([&](){
+    	while (!done){	
+		// grab frame
+    		std::lock_guard<std::mutex> guard(cap_mutex);
+		    cap.read(frame);
+		    if (frame.empty()) {
+		        perror("could not query OpenCV capture");
+		    }
+    	}
+
+    });
+
+
     return 1;
+
+
+
 }
 
 // frame grabber
@@ -84,11 +110,8 @@ extern "C"  int l_grabFrame(lua_State *L) {
     const int idx = lua_tonumber(L, 1);
     THFloatTensor *tensor = (THFloatTensor *) luaT_toudata(L, 2, "torch.FloatTensor");
 
-    // grab frame
-    cap.read(frame);
-    if (frame.empty()) {
-        perror("could not query OpenCV capture");
-    }
+
+    std::lock_guard<std::mutex> guard(cap_mutex);
 
     // resize given tensor
     THFloatTensor_resize3d(tensor, 3, frame.rows, frame.cols);
@@ -118,6 +141,11 @@ extern "C"  int l_grabFrame(lua_State *L) {
 }
 
 extern "C"  int l_releaseCam(lua_State *L) {
+
+    done = true;
+    if(cap_thread.joinable()){
+        cap_thread.join();
+    }
     cap.release();
     return 0;
 }
