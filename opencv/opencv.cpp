@@ -89,11 +89,14 @@ extern "C" int l_initCam(lua_State *L) {
     cap_thread = std::thread([&](){
     	while (!done){	
 		// grab frame
-    		std::unique_lock<std::mutex> guard(cap_mutex);
-		    cap.read(frame);
-		    if (frame.empty()) {
+    		cv::Mat img;
+		    cap.read(img);
+		    if (img.empty()) {
 		        perror("could not query OpenCV capture");
 		    }
+
+            std::unique_lock<std::mutex> guard(cap_mutex);
+            frame = img.clone();
 		    guard.unlock();
 		    cv::waitKey(50);
     	}
