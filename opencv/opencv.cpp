@@ -22,6 +22,7 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <TH/TH.h>
 
 #define MAXIDX 100
 static cv::VideoCapture cap;
@@ -118,7 +119,6 @@ extern "C"  int l_grabFrame(lua_State *L) {
     guard.unlock();
 
     float resize_ratio = static_cast<float>(width) / static_cast<float>(local_frame.cols);
-    std::cout << resize_ratio << std::endl;
 
     cv::resize(local_frame, local_frame, cv::Size(), resize_ratio, resize_ratio);
 
@@ -152,36 +152,35 @@ extern "C"  int l_grabFrame(lua_State *L) {
     return 0;
 }
 
-extern "C"  int l_show(lua_State *L) {
-    const THFloatTensor* tensor = static_cast<const THFloatTensor *>(lua_topointer(L, 1));
-    cv::Mat local_frame(width, height, CV_8UC3);
+
+extern "C"  int l_convert(lua_State *L) {
+    float min = lua_tonumber(L, 1);
+    float max = lua_tonumber(L, 2);
+    THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 3, "torch.DoubleTensor");
 
     int channels = 3;
 
-    float *src = THFloatTensor_data(tensor);
-
-    unsigned char *dst = (unsigned char *) local_frame.data;
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
     int m2 = tensor->stride[0];
+    double *src = THDoubleTensor_data(tensor);
 
     int i, j, k;
-    for (i = 0; i < local_frame.rows; i++) {
-        for (j = 0, k = 0; j < local_frame.cols; j++, k += m1) {
+    for (i = 0; i < height; i++) {
+        for (j = 0, k = 0; j < width; j++, k += m1) {
+
+            int pos = i * 3 + j * channels;
             // red:
-            dst[k] = src[i * local_frame.step + j * channels + 2] / 255.;
+            src[k] = (src[k]- min) /  max;
             // green:
-            dst[k + m2] = src[i * local_frame.step + j * channels + 1] / 255.;
+            src[k+m2] = (src[k + m2]- min) /  max;
             // blue:
-            dst[k + 2 * m2] = src[i * local_frame.step + j * channels + 0] / 255.;
+            src[k + 2 * m2] = (src[k + 2 * m2] - min) /  max;
+
         }
-        dst += m0;
+        src += m0;
     }
-
-
-    cv::imshow("Result", local_frame);
-    cv::waitKey(1);
-
+    return 0;
 }
 
 extern "C"  int l_releaseCam(lua_State *L) {
@@ -199,7 +198,7 @@ const struct luaL_reg opencv[] = {
         {"initCam",    l_initCam},
         {"grabFrame",  l_grabFrame},
         {"releaseCam", l_releaseCam},
-        {"show", l_show},
+        {"convert", l_convert},
         {NULL, NULL}  /* sentinel */
 };
 

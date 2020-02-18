@@ -48,8 +48,8 @@ function Camera:forward()
 end
 
 
-function Camera:show(buffer)
-   libcamopencv.show(buffer)
+function Camera:convert(min, max, buffer)
+   libcamopencv.convert(min, max, buffer)
 end
 
 function Camera:stop()

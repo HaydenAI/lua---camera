@@ -18,12 +18,15 @@ camera1 = image.Camera{idx=-1,width=width,height=height,fps=fps, stream =stream}
 a1 = camera1:forward()
 win = image.display{win=win,image={a1}}
 f = 1
-
+sys.tic()
 while true do
-   sys.tic()
    a1 = camera1:forward()
+   print("->", a1:max())
+   camera1:convert(-0.1, 0.1, a1)
+   print("->", a1:max())
+
    image.display{win=win,image={a1}}
    --image.savePNG(string.format("%s/frame_1_%05d.png",dir,f),a1)
    f = f + 1
-   print("FPS: ".. 1/sys.toc()) 
+   print("FPS: ".. f/sys.toc())
 end
