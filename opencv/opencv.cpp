@@ -26,7 +26,7 @@
 #define MAXIDX 100
 static cv::VideoCapture cap;
 static int fidx = 0;
-static cv::Mat frame;
+cv::Mat frame;
 
 std::thread cap_thread;
 std::mutex cap_mutex;
