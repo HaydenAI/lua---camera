@@ -98,6 +98,7 @@ extern "C" int l_initCam(lua_State *L) {
             std::unique_lock<std::mutex> guard(cap_mutex);
             frame = img.clone();
 		    guard.unlock();
+		    cv::imshow("test", frame);
 		    cv::waitKey(50);
     	}
 
@@ -115,7 +116,6 @@ extern "C"  int l_grabFrame(lua_State *L) {
 
     std::unique_lock<std::mutex> guard(cap_mutex);
     cv::Mat local_frame = frame.clone();
-    frame.release();
     guard.unlock();
     // resize given tensor
     THFloatTensor_resize3d(tensor, 3, local_frame.rows, local_frame.cols);
