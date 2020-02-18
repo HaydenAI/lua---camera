@@ -86,22 +86,21 @@ extern "C" int l_initCam(lua_State *L) {
     lua_pushnumber(L, fidx);
     fidx++;
 
-    cap_thread = std::thread([&](){
-    	while (true){
-		// grab frame
-    		cv::Mat img;
-		    cap.read(img);
-		    if (img.empty()) {
-		        perror("could not query OpenCV capture");
-		    }
+    cap_thread = std::thread([&]() {
+        // grab frame
+            while(!done){
+                std::cout << "asdasdasda" << std::endl;
+                cv::Mat img;
+                cap.read(img);
+                if (img.empty()) {
+                    perror("could not query OpenCV capture");
+                }
 
-            std::unique_lock<std::mutex> guard(cap_mutex);
-            frame = img.clone();
-		    guard.unlock();
-		    cv::waitKey(50);
-    	}
-
-    });
+                std::unique_lock<std::mutex> guard(cap_mutex);
+                frame = img.clone();
+                guard.unlock();
+            }
+    	});
 
     return 1;
 }

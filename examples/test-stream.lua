@@ -11,7 +11,7 @@ dir = "demo_test"
 
 sys.execute(string.format('mkdir -p %s',dir))
 
-local stream = 'udpsrc port=5001 ! application/x-rtp,media=video,payload=26,clock-rate=90000,encoding-name=JPEG,framerate=30/1 ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink'
+local stream = 'shmsrc socket-path=/tmp/tmpsock ! video/x-raw, format=(string)BGR, width=(int)1920, height=(int)1080, framerate=(fraction)20/1 ! appsink'
 
 camera1 = image.Camera{idx=-1,width=width,height=height,fps=fps, stream =stream}
 
