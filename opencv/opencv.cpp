@@ -87,7 +87,7 @@ extern "C" int l_initCam(lua_State *L) {
     fidx++;
 
     cap_thread = std::thread([&](){
-    	while (!done){	
+    	while (true){
 		// grab frame
     		cv::Mat img;
 		    cap.read(img);
@@ -98,7 +98,6 @@ extern "C" int l_initCam(lua_State *L) {
             std::unique_lock<std::mutex> guard(cap_mutex);
             frame = img.clone();
 		    guard.unlock();
-		    cv::imshow("test", frame);
 		    cv::waitKey(50);
     	}
 
