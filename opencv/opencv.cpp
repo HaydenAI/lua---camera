@@ -32,13 +32,16 @@ std::thread cap_thread;
 std::mutex cap_mutex;
 std::atomic_bool done;
 
+int width;
+int height;
+
 extern "C" int l_initCam(lua_State *L) {
 
     done = false;
 
     // args
-    //int width = lua_tonumber(L, 2);
-    //int height = lua_tonumber(L, 3);
+    width = lua_tonumber(L, 2);
+    height = lua_tonumber(L, 3);
 
     // max allocs ?
     if (fidx == MAXIDX) {
@@ -110,10 +113,19 @@ extern "C"  int l_grabFrame(lua_State *L) {
     const int idx = lua_tonumber(L, 1);
     THFloatTensor *tensor = (THFloatTensor *) luaT_toudata(L, 2, "torch.FloatTensor");
 
-
     std::unique_lock<std::mutex> guard(cap_mutex);
     cv::Mat local_frame = frame.clone();
     guard.unlock();
+
+    float resize_ratio = static_cast<float>(width) / static_cast<float>(local_frame.cols);
+    std::cout << resize_ratio << std::endl;
+
+    cv::resize(local_frame, local_frame, cv::Size(), resize_ratio, resize_ratio);
+
+    cv::Rect roi(0, local_frame.rows - height, width, height);
+    local_frame = local_frame(roi).clone();
+
+
     // resize given tensor
     THFloatTensor_resize3d(tensor, 3, local_frame.rows, local_frame.cols);
 

@@ -17,8 +17,8 @@ function Camera:__init(...)
       {...},
       'image.Camera', nil,
       {arg='idx', type='number', help='camera index', default=0},
-      {arg='width', type='number', help='frame width', default=640},
-      {arg='height', type='number', help='frame height', default=480},
+      {arg='width', type='number', help='frame width', default=1920},
+      {arg='height', type='number', help='frame height', default=1080},
       {arg='stream', type='string', help='Stream URL', default=''}
    )
 

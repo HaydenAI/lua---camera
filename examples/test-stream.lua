@@ -4,8 +4,8 @@ require 'sys'
 useOpenCV = true
 require 'camera'
 
-width  = 640
-height = 480
+width  = 976
+height = 208
 fps = 30
 dir = "demo_test"
 
