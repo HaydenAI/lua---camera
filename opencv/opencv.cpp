@@ -33,6 +33,9 @@ std::mutex cap_mutex;
 std::atomic_bool done;
 
 extern "C" int l_initCam(lua_State *L) {
+
+    done = false;
+
     // args
     //int width = lua_tonumber(L, 2);
     //int height = lua_tonumber(L, 3);
@@ -83,25 +86,21 @@ extern "C" int l_initCam(lua_State *L) {
     lua_pushnumber(L, fidx);
     fidx++;
 
-
-
     cap_thread = std::thread([&](){
     	while (!done){	
 		// grab frame
-    		std::lock_guard<std::mutex> guard(cap_mutex);
+    		std::unique_lock<std::mutex> guard(cap_mutex);
 		    cap.read(frame);
 		    if (frame.empty()) {
 		        perror("could not query OpenCV capture");
 		    }
+		    guard.unlock();
+		    cv::waitKey(50)
     	}
 
     });
 
-
     return 1;
-
-
-
 }
 
 // frame grabber
@@ -111,32 +110,33 @@ extern "C"  int l_grabFrame(lua_State *L) {
     THFloatTensor *tensor = (THFloatTensor *) luaT_toudata(L, 2, "torch.FloatTensor");
 
 
-    std::lock_guard<std::mutex> guard(cap_mutex);
+    std::unique_lock<std::mutex> guard(cap_mutex);
+    cv::Mat local_frame = frame.clone();
 
+    guard.unlock();
     // resize given tensor
-    THFloatTensor_resize3d(tensor, 3, frame.rows, frame.cols);
+    THFloatTensor_resize3d(tensor, 3, local_frame.rows, local_frame.cols);
 
     // copy to tensor
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
     int m2 = tensor->stride[0];
 
-    int channels = frame.channels();
-    unsigned char *src = (unsigned char *) frame.data;
+    int channels = local_frame.channels();
+    unsigned char *src = (unsigned char *) local_frame.data;
     float *dst = THFloatTensor_data(tensor);
     int i, j, k;
-    for (i = 0; i < frame.rows; i++) {
-        for (j = 0, k = 0; j < frame.cols; j++, k += m1) {
+    for (i = 0; i < local_frame.rows; i++) {
+        for (j = 0, k = 0; j < local_frame.cols; j++, k += m1) {
             // red:
-            dst[k] = src[i * frame.step + j * channels + 2] / 255.;
+            dst[k] = src[i * local_frame.step + j * channels + 2] / 255.;
             // green:
-            dst[k + m2] = src[i * frame.step + j * channels + 1] / 255.;
+            dst[k + m2] = src[i * local_frame.step + j * channels + 1] / 255.;
             // blue:
-            dst[k + 2 * m2] = src[i * frame.step + j * channels + 0] / 255.;
+            dst[k + 2 * m2] = src[i * local_frame.step + j * channels + 0] / 255.;
         }
         dst += m0;
     }
-
     return 0;
 }
 
