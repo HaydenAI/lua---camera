@@ -27,9 +27,15 @@ function Camera:__init(...)
    self.buffer = torch.FloatTensor()
    self.tensortyped = torch.Tensor(3, height, width)
    self.idx = idx
+   self.width = width
+   self.height = height
+   self.idx = idx
+   self.stream = stream
+end
 
    -- init capture
-   self.fidx = libcamopencv.initCam(idx, width, height, stream)
+function Camera:start()
+   self.fidx = libcamopencv.initCam(self.idx, self.width, self.height, self.stream)
 end
 
 function Camera:forward()

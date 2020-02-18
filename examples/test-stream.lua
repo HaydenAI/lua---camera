@@ -15,6 +15,7 @@ local stream = 'shmsrc socket-path=/tmp/tmpsock ! video/x-raw, format=(string)BG
 
 camera1 = image.Camera{idx=-1,width=width,height=height,fps=fps, stream =stream}
 
+camera1:start()
 a1 = camera1:forward()
 win = image.display{win=win,image={a1}}
 f = 1
