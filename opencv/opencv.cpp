@@ -139,12 +139,6 @@ extern "C"  int l_grabFrame(lua_State *L) {
     float *dst = THFloatTensor_data(tensor);
     int i, j, k;
 
-    // TODO
-    // local meanstd = {
-    //   mean = { 0.3598, 0.3653, 0.3662 },
-    //   std = { 0.2573, 0.2663, 0.2756 },
-    //}
-
     for (i = 0; i < local_frame.rows; i++) {
         for (j = 0, k = 0; j < local_frame.cols; j++, k += m1) {
             // red:
@@ -162,20 +156,17 @@ extern "C"  int l_grabFrame(lua_State *L) {
 extern "C"  int l_convert(lua_State *L) {
     float min = lua_tonumber(L, 1);
     float max = lua_tonumber(L, 2);
-    std::cout << 1 << std::endl;
+
     THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 3, "torch.DoubleTensor");
-    std::cout << tensor->nDimension << std::endl;
     int width = lua_tonumber(L, 4);
     int height = lua_tonumber(L, 5);
     int channels = lua_tonumber(L, 6);
-    std::cout << 2 << std::endl;
+
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
     int m2 = tensor->stride[0];
-    std::cout << 3 << std::endl;
 
     double *src = THDoubleTensor_data(tensor);
-    std::cout << 4 << std::endl;
 
     int i, j, k;
     for (i = 0; i < height; i++) {
@@ -192,7 +183,6 @@ extern "C"  int l_convert(lua_State *L) {
         }
         src += m0;
     }
-    std::cout << 5 << std::endl;
     return 0;
 }
 
