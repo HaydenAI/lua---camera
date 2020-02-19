@@ -186,6 +186,39 @@ extern "C"  int l_convert(lua_State *L) {
     return 0;
 }
 
+
+extern "C"  int l_imageMult(lua_State *L) {
+    float scale = lua_tonumber(L, 1);
+    THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 2, "torch.DoubleTensor");
+    int width = lua_tonumber(L, 3);
+    int height = lua_tonumber(L, 4);
+    int channels = lua_tonumber(L, 5);
+
+    int m0 = tensor->stride[1];
+    int m1 = tensor->stride[2];
+    int m2 = tensor->stride[0];
+
+    double *src = THDoubleTensor_data(tensor);
+
+    int i, j, k;
+    for (i = 0; i < height; i++) {
+        for (j = 0, k = 0; j < width; j++, k += m1) {
+
+            int pos = i * 3 + j * channels;
+            // red:
+            src[k] = src[k] * scale;
+            // green:
+            src[k+m2] = src[k + m2]* scale;
+            // blue:
+            src[k + 2 * m2] = src[k + 2 * m2] * scale;
+
+        }
+        src += m0;
+    }
+    return 0;
+}
+
+
 extern "C"  int l_releaseCam(lua_State *L) {
 
     done = true;
@@ -202,6 +235,7 @@ const struct luaL_reg opencv[] = {
         {"grabFrame",  l_grabFrame},
         {"releaseCam", l_releaseCam},
         {"convert", l_convert},
+        {"imageMult", l_imageMult},
         {NULL, NULL}  /* sentinel */
 };
 

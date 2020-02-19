@@ -58,6 +58,10 @@ function Camera:convert(min, max, buffer)
    libcamopencv.convert(min, max, buffer, self.width, self.height, 3)
 end
 
+function Camera:imageMult(scale, buffer)
+   libcamopencv.imageMult(scale, buffer, self.width, self.height, 3)
+end
+
 function Camera:stop()
   libcamopencv.releaseCam(self.fidx)
   print('stopping camera')
