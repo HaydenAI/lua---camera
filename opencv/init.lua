@@ -57,6 +57,10 @@ function Camera:forward(crop_ypos_ratio)
 end
 
 
+function Camera:extractLines(buffer)
+   libcamopencv.extractLines(buffer, self.width, self.height, 3)
+end
+
 function Camera:convert(min, max, buffer)
    libcamopencv.convert(min, max, buffer, self.width, self.height, 3)
 end
