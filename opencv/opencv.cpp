@@ -156,7 +156,7 @@ extern "C"  int l_grabFrame(lua_State *L) {
 extern "C"  int l_convert(lua_State *L) {
     float min = lua_tonumber(L, 1);
     float max = lua_tonumber(L, 2);
-    THFloatTensor *tensor = (THFloatTensor *) luaT_toudata(L, 3, "torch.DoubleTensor");
+    THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 3, "torch.DoubleTensor");
     int width = lua_tonumber(L, 4);
     int height = lua_tonumber(L, 5);
     int channels = lua_tonumber(L, 6);
@@ -164,13 +164,11 @@ extern "C"  int l_convert(lua_State *L) {
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
     int m2 = tensor->stride[0];
-    float *src = THFloatTensor_data(tensor);
+    double *src = THDoubleTensor_data(tensor);
 
     int i, j, k;
     for (i = 0; i < height; i++) {
         for (j = 0, k = 0; j < width; j++, k += m1) {
-
-            int pos = i * 3 + j * channels;
             // red:
             src[k] = (src[k]- min) /  max;
             // green:
