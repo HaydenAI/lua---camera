@@ -23,7 +23,7 @@ sys.tic()
 while true do
    a1 = camera1:forward()
    print("->", a1:max())
-   camera1:convert(-13, 0.000001, a1)
+   camera1:convert(-13, 0.01, a1)
    print("->", a1:max())
 
    image.display{win=win,image={a1}}
