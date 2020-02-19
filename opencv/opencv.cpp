@@ -155,8 +155,9 @@ extern "C"  int l_grabFrame(lua_State *L) {
 extern "C"  int l_convert(lua_State *L) {
     float min = lua_tonumber(L, 1);
     float max = lua_tonumber(L, 2);
-    THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 3, "torch.DoubleTensor");
     std::cout << 1 << std::endl;
+    THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 3, "torch.DoubleTensor");
+    std::cout << tensor->nDimension << std::endl;
     int width = lua_tonumber(L, 4);
     int height = lua_tonumber(L, 5);
     int channels = lua_tonumber(L, 6);
