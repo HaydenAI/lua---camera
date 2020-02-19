@@ -227,10 +227,11 @@ extern "C"  int l_imageMult(lua_State *L) {
 
 extern "C"  int l_extractLines(lua_State *L) {
 
-    THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 1, "torch.DoubleTensor");
+    float thresh = lua_tonumber(L, 1);
+    THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 2, "torch.DoubleTensor");
 
-    int width = lua_tonumber(L, 2);
-    int height = lua_tonumber(L, 3);
+    int width = lua_tonumber(L, 3);
+    int height = lua_tonumber(L, 4);
 
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
@@ -246,8 +247,7 @@ extern "C"  int l_extractLines(lua_State *L) {
         for (j = 0, k = 0; j < width; j++, k += m1) {
 
             // red:
-            std::cout << src[k] + src[k + m2] + src[k + 2 * m2] << std::endl;
-            if(src[k] > 0 || src[k + m2] > 0 || src[k + 2 * m2] > 0) {
+            if(src[k] > thresh || src[k + m2] > thresh || src[k + 2 * m2] > thresh) {
                 dst_mat.at<uchar>(i,j)  = 255;
             }
         }
