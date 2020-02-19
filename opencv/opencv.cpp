@@ -138,14 +138,21 @@ extern "C"  int l_grabFrame(lua_State *L) {
     unsigned char *src = (unsigned char *) local_frame.data;
     float *dst = THFloatTensor_data(tensor);
     int i, j, k;
+
+    // TODO
+    // local meanstd = {
+    //   mean = { 0.3598, 0.3653, 0.3662 },
+    //   std = { 0.2573, 0.2663, 0.2756 },
+    //}
+
     for (i = 0; i < local_frame.rows; i++) {
         for (j = 0, k = 0; j < local_frame.cols; j++, k += m1) {
             // red:
-            dst[k] = src[i * local_frame.step + j * channels + 2] / 255.;
+            dst[k] = ((src[i * local_frame.step + j * channels + 2] / 255.) -0.3598) / 0.2573;
             // green:
-            dst[k + m2] = src[i * local_frame.step + j * channels + 1] / 255.;
+            dst[k + m2] = ((src[i * local_frame.step + j * channels + 1] / 255.) -0.3598) / 0.2663;
             // blue:
-            dst[k + 2 * m2] = src[i * local_frame.step + j * channels + 0] / 255.;
+            dst[k + 2 * m2] = ((src[i * local_frame.step + j * channels + 0] / 255.) - 0.3598)/ 0.2756;
         }
         dst += m0;
     }
