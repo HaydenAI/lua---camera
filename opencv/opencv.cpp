@@ -122,7 +122,7 @@ extern "C"  int l_grabFrame(lua_State *L) {
 
     cv::resize(local_frame, local_frame, cv::Size(), resize_ratio, resize_ratio);
 
-    cv::Rect roi(0, (local_frame.rows/2) - height, width, height);
+    cv::Rect roi(0, (local_frame.rows/2) - (height/2), width, height);
     local_frame = local_frame(roi).clone();
 
 
