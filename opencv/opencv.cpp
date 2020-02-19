@@ -190,16 +190,25 @@ extern "C"  int l_convert(lua_State *L) {
 extern "C"  int l_imageMult(lua_State *L) {
     float scale = lua_tonumber(L, 1);
     THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 2, "torch.DoubleTensor");
+
+    std::cout << 1 << std::endl;
     int width = lua_tonumber(L, 3);
     int height = lua_tonumber(L, 4);
     int channels = lua_tonumber(L, 5);
+
+
+    std::cout << 1 << std::endl;
 
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
     int m2 = tensor->stride[0];
 
+
+    std::cout << 1 << std::endl;
     double *src = THDoubleTensor_data(tensor);
 
+
+    std::cout << 1 << std::endl;
     int i, j, k;
     for (i = 0; i < height; i++) {
         for (j = 0, k = 0; j < width; j++, k += m1) {
@@ -215,6 +224,8 @@ extern "C"  int l_imageMult(lua_State *L) {
         }
         src += m0;
     }
+
+    std::cout << 1 << std::endl;
     return 0;
 }
 
