@@ -38,8 +38,11 @@ function Camera:start()
    self.fidx = libcamopencv.initCam(self.idx, self.width, self.height, self.stream)
 end
 
-function Camera:forward()
-   libcamopencv.grabFrame(self.fidx, self.buffer, self.width, self.height)
+function Camera:forward(crop_ypos_ratio)
+   if (crop_ypos_ratio == nil) then
+      crop_ypos_ratio = 0.5
+   end
+   libcamopencv.grabFrame(self.fidx,  self.buffer, crop_ypos_ratio, self.width, self.height)
    if self.tensorsized:size(2) ~= self.buffer:size(2) or self.tensorsized:size(3) ~= self.buffer:size(3) then
       image.scale(self.tensorsized, self.buffer)
    else

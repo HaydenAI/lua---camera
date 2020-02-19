@@ -111,8 +111,10 @@ extern "C"  int l_grabFrame(lua_State *L) {
     // Get Tensor's Info
     const int idx = lua_tonumber(L, 1);
     THFloatTensor *tensor = (THFloatTensor *) luaT_toudata(L, 2, "torch.FloatTensor");
-    int width = lua_tonumber(L, 3);
-    int height = lua_tonumber(L, 4);
+    float crop_ypos_ratio = lua_tonumber(L, 3);
+
+    int width = lua_tonumber(L, 4);
+    int height = lua_tonumber(L, 5);
 
     std::unique_lock<std::mutex> guard(cap_mutex);
     cv::Mat local_frame = frame.clone();
@@ -122,7 +124,15 @@ extern "C"  int l_grabFrame(lua_State *L) {
 
     cv::resize(local_frame, local_frame, cv::Size(), resize_ratio, resize_ratio);
 
-    cv::Rect roi(0, (local_frame.rows/2) - (height/2), width, height);
+    int y  = (local_frame.rows * crop_ypos_ratio) - height;
+    if(y < 0){
+        y = 0;
+    }
+    if( y > local_frame.rows - height){
+        y = local_frame.rows - height;
+    }
+
+    cv::Rect roi(0, y, width, height);
     local_frame = local_frame(roi).clone();
 
 
