@@ -58,15 +58,15 @@ end
 
 
 function Camera:extractLines(buffer)
-   libcamopencv.extractLines(buffer, self.width, self.height, 3)
+   libcamopencv.extractLines(buffer, self.width, self.height)
 end
 
 function Camera:convert(min, max, buffer)
-   libcamopencv.convert(min, max, buffer, self.width, self.height, 3)
+   libcamopencv.convert(min, max, buffer, self.width, self.height)
 end
 
 function Camera:imageMult(scale, buffer)
-   libcamopencv.imageMult(scale, buffer, self.width, self.height, 3)
+   libcamopencv.imageMult(scale, buffer, self.width, self.height)
 end
 
 function Camera:stop()

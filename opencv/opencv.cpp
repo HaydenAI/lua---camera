@@ -170,7 +170,6 @@ extern "C"  int l_convert(lua_State *L) {
     THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 3, "torch.DoubleTensor");
     int width = lua_tonumber(L, 4);
     int height = lua_tonumber(L, 5);
-    int channels = lua_tonumber(L, 6);
 
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
@@ -182,7 +181,6 @@ extern "C"  int l_convert(lua_State *L) {
     for (i = 0; i < height; i++) {
         for (j = 0, k = 0; j < width; j++, k += m1) {
 
-            int pos = i * 3 + j * channels;
             // red:
             src[k] = (src[k]- min) /  max;
             // green:
@@ -203,7 +201,6 @@ extern "C"  int l_imageMult(lua_State *L) {
 
     int width = lua_tonumber(L, 3);
     int height = lua_tonumber(L, 4);
-    int channels = lua_tonumber(L, 5);
 
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
@@ -215,7 +212,6 @@ extern "C"  int l_imageMult(lua_State *L) {
     for (i = 0; i < height; i++) {
         for (j = 0, k = 0; j < width; j++, k += m1) {
 
-            int pos = i * 3 + j * channels;
             // red:
             src[k] = src[k] * scale;
             // green:
@@ -235,7 +231,6 @@ extern "C"  int l_extractLines(lua_State *L) {
 
     int width = lua_tonumber(L, 2);
     int height = lua_tonumber(L, 3);
-    int channels = lua_tonumber(L, 4);
 
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
@@ -243,17 +238,17 @@ extern "C"  int l_extractLines(lua_State *L) {
 
     double *src = THDoubleTensor_data(tensor);
 
-    cv::Mat dst_mat = cv::Mat::zeros(height, width, CV_8U);
+    cv::Mat dst_mat = cv::Mat::zeros(height, width, CV_8UC1);
     unsigned char *dst = (unsigned char *) dst_mat.data;
 
     int i, j, k;
     for (i = 0; i < height; i++) {
         for (j = 0, k = 0; j < width; j++, k += m1) {
 
-            int pos = i * 3 + j * channels;
             // red:
-            if(src[k] + src[k + m2] + src[k + 2 * m2] > 0) {
-                dst[k] = 255;
+            std::cout << src[k] + src[k + m2] + src[k + 2 * m2] << std::endl;
+            if(src[k] > 0 || src[k + m2] > 0 || src[k + 2 * m2] > 0) {
+                dst_mat.at<uchar>(i,j)  = 255;
             }
         }
         src += m0;
