@@ -293,8 +293,10 @@ extern "C"  int l_extractLines(lua_State *L) {
                      cv::Scalar(255, 255, 255), 1);
 
              */
-            pos+=4;
+
+            std::cout << lt[pos+3] << std::endl;
         }
+        pos+=4;
     }
 
     //cv::imwrite("lanes1.png", dst_mat);
