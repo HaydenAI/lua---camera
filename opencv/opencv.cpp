@@ -255,23 +255,22 @@ extern "C"  int l_extractLines(lua_State *L) {
             if(src[k] > thresh && src[k + 2 * m2] > thresh){
                 p[0]  = 255;
                 p[2]  = 255;
-                l1.push_back(cv::Point(i,j));
+                l1.push_back(cv::Point(j,i));
 
             } else if(src[k] > thresh){
                 p[2]  = 255;
-                l2.push_back(cv::Point(i,j));
+                l2.push_back(cv::Point(j,i));
             } else if(src[k + m2] > thresh){
                 p[1]  = 255;
-                l3.push_back(cv::Point(i,j));
+                l3.push_back(cv::Point(j,i));
             } else if(src[k + 2 * m2] > thresh){
                 p[0]  = 255;
-                l4.push_back(cv::Point(i,j));
+                l4.push_back(cv::Point(j,i));
             }
         }
         src += m0;
     }
 
-    cv::imwrite("lanes1.png", dst_mat);
 
     //TODO extract lanes here
     cv::Vec4f line1;
@@ -285,28 +284,32 @@ extern "C"  int l_extractLines(lua_State *L) {
 
     if(l1.size() > min_points) {
         fitLine(l1, line1, CV_DIST_L2, 0, 0.01, 0.01);
-        cv::line( lines, cv::Point(line1[2],line1[3]), cv::Point(line1[2]+line1[0]*500,line1[3]+line1[1]*500), cv::Scalar(255,0,255), 1);
+        cv::line( dst_mat, cv::Point(line1[2],line1[3]), cv::Point(line1[2]+line1[0]*500,line1[3]+line1[1]*500),
+                cv::Scalar(255,255,255), 1);
 
     }
     if(l2.size() > min_points) {
         fitLine(l2, line2, CV_DIST_L2, 0, 0.01, 0.01);
-        cv::line( lines, cv::Point(line2[2],line2[3]), cv::Point(line2[2]+line2[0]*500,line2[3]+line2[1]*500), cv::Scalar(0,0,255), 1);
+        cv::line( dst_mat, cv::Point(line2[2],line2[3]), cv::Point(line2[2]+line2[0]*500,line2[3]+line2[1]*500),
+                cv::Scalar(255,255,255), 1);
 
     }
 
     if(l3.size() > min_points) {
         fitLine(l3, line3, CV_DIST_L2, 0, 0.01, 0.01);
-        cv::line( lines, cv::Point(line3[2],line3[3]), cv::Point(line3[2]+line3[0]*500,line3[3]+line3[1]*500), cv::Scalar(0,255,0), 1);
+        cv::line( dst_mat, cv::Point(line3[2],line3[3]), cv::Point(line3[2]+line3[0]*500,line3[3]+line3[1]*500),
+                cv::Scalar(255,255,255), 1);
 
     }
 
     if(l4.size() > min_points) {
         fitLine(l4, line4, CV_DIST_L2, 0, 0.01, 0.01);
-        cv::line( lines, cv::Point(line4[2],line4[3]), cv::Point(line4[2]+line4[0]*500,line4[3]+line4[1]*500), cv::Scalar(255,0,0), 1);
+        cv::line( dst_mat, cv::Point(line4[2],line4[3]), cv::Point(line4[2]+line4[0]*500,line4[3]+line4[1]*500),
+                cv::Scalar(255,255,255), 1);
 
     }
 
-    cv::imwrite("line.png", lines);
+    cv::imwrite("lanes1.png", dst_mat);
 
 
 
