@@ -293,8 +293,6 @@ extern "C"  int l_extractLines(lua_State *L) {
                      cv::Scalar(255, 255, 255), 1);
 
              */
-
-            std::cout << lt[pos+3] << std::endl;
         }
         pos+=4;
     }
