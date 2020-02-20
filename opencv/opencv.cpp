@@ -278,7 +278,7 @@ extern "C"  int l_extractLines(lua_State *L) {
     THDoubleTensor_resize1d(line_tensor, 16);
     double *lt = THDoubleTensor_data(line_tensor);
     int pos = 0;
-    for (i = 0; i < line_fit.size(); i++) {
+    for (i = 0; i < line_points.size(); i++) {
         if (line_points[i].size() > min_points) {
             fitLine(line_points[i], line_fit[i], CV_DIST_HUBER, 0, 0.01, 0.01);
 
