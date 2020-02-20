@@ -58,8 +58,10 @@ end
 
 
 function Camera:extractLines(thresh, min_points, line_length, buffer)
-   line_points = torch.DoubleTensor(16)
+   local line_points = torch.DoubleTensor(16)
    libcamopencv.extractLines(thresh, min_points, line_length, buffer, line_points, self.width, self.height)
+   print(line_points)
+
    return line_points
 end
 
