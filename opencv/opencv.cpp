@@ -253,7 +253,7 @@ extern "C"  int l_extractLines(lua_State *L) {
 
             unsigned char * p = dst_mat.ptr(i,j);
 
-            if(src[k] > thresh && src[k + 2 * m2] > thresh){
+            if(src[k + 3 * m2] > thresh){
                 p[0]  = 255;
                 p[2]  = 255;
                 line_points[0].push_back(cv::Point(j,i));
