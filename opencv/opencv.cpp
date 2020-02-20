@@ -239,22 +239,31 @@ extern "C"  int l_extractLines(lua_State *L) {
 
     double *src = THDoubleTensor_data(tensor);
 
-    cv::Mat dst_mat = cv::Mat::zeros(height, width, CV_8UC1);
-    unsigned char *dst = (unsigned char *) dst_mat.data;
+    cv::Mat dst_mat = cv::Mat::zeros(height, width, CV_8UC3);
 
     int i, j, k;
     for (i = 0; i < height; i++) {
         for (j = 0, k = 0; j < width; j++, k += m1) {
 
-            // red:
-            if(src[k] > thresh || src[k + m2] > thresh || src[k + 2 * m2] > thresh) {
-                dst_mat.at<uchar>(i,j)  = 255;
+            unsigned char * p = dst_mat.ptr(i,j);
+
+            if(src[k] > thresh){
+                p[2]  = 255;
+            } else if(src[k + m2] > thresh){
+                p[1]  = 255;
+            } else if(src[k + 2 * m2] > thresh){
+                p[0]  = 255;
             }
         }
         src += m0;
     }
 
-    cv::imwrite("lanes.png", dst_mat);
+    cv::imwrite("lanes1.png", dst_mat);
+
+    //TODO extract lanes here
+
+
+
 
     return 0;
 
