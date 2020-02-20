@@ -283,27 +283,27 @@ extern "C"  int l_extractLines(lua_State *L) {
     cv::Mat lines = cv::Mat::zeros(height, width, CV_8UC3);
 
     if(l1.size() > min_points) {
-        fitLine(l1, line1, CV_DIST_L2, 0, 0.01, 0.01);
+        fitLine(l1, line1, CV_DIST_HUBER, 0, 0.01, 0.01);
         cv::line( dst_mat, cv::Point(line1[2],line1[3]), cv::Point(line1[2]+line1[0]*5000,line1[3]+line1[1]*5000),
                 cv::Scalar(255,255,255), 1);
 
     }
     if(l2.size() > min_points) {
-        fitLine(l2, line2, CV_DIST_L2, 0, 0.01, 0.01);
+        fitLine(l2, line2, CV_DIST_HUBER, 0, 0.01, 0.01);
         cv::line( dst_mat, cv::Point(line2[2],line2[3]), cv::Point(line2[2]+line2[0]*5000,line2[3]+line2[1]*5000),
                 cv::Scalar(255,255,255), 1);
 
     }
 
     if(l3.size() > min_points) {
-        fitLine(l3, line3, CV_DIST_L2, 0, 0.01, 0.01);
+        fitLine(l3, line3, CV_DIST_HUBER, 0, 0.01, 0.01);
         cv::line( dst_mat, cv::Point(line3[2],line3[3]), cv::Point(line3[2]+line3[0]*5000,line3[3]+line3[1]*5000),
                 cv::Scalar(255,255,255), 1);
 
     }
 
     if(l4.size() > min_points) {
-        fitLine(l4, line4, CV_DIST_L2, 0, 0.01, 0.01);
+        fitLine(l4, line4, CV_DIST_HUBER, 0, 0.01, 0.01);
         cv::line( dst_mat, cv::Point(line4[2],line4[3]), cv::Point(line4[2]+line4[0]*5000,line4[3]+line4[1]*5000),
                 cv::Scalar(255,255,255), 1);
 
