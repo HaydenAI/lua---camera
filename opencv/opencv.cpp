@@ -232,9 +232,10 @@ extern "C"  int l_extractLines(lua_State *L) {
     float line_length = lua_tonumber(L, 3);
 
     THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 4, "torch.DoubleTensor");
+    THDoubleTensor *line_tensor = (THDoubleTensor *) luaT_toudata(L, 5, "torch.DoubleTensor");
 
-    int width = lua_tonumber(L, 5);
-    int height = lua_tonumber(L, 6);
+    int width = lua_tonumber(L, 6);
+    int height = lua_tonumber(L, 7);
 
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
@@ -244,10 +245,7 @@ extern "C"  int l_extractLines(lua_State *L) {
 
     cv::Mat dst_mat = cv::Mat::zeros(height, width, CV_8UC3);
 
-    std::vector<cv::Point> l1;
-    std::vector<cv::Point> l2;
-    std::vector<cv::Point> l3;
-    std::vector<cv::Point> l4;
+    std::vector<std::vector<cv::Point>> line_points(4);
 
     int i, j, k;
     for (i = 0; i < height; i++) {
@@ -258,17 +256,17 @@ extern "C"  int l_extractLines(lua_State *L) {
             if(src[k] > thresh && src[k + 2 * m2] > thresh){
                 p[0]  = 255;
                 p[2]  = 255;
-                l1.push_back(cv::Point(j,i));
+                line_points[0].push_back(cv::Point(j,i));
 
             } else if(src[k] > thresh){
                 p[2]  = 255;
-                l2.push_back(cv::Point(j,i));
+                line_points[1].push_back(cv::Point(j,i));
             } else if(src[k + m2] > thresh){
                 p[1]  = 255;
-                l3.push_back(cv::Point(j,i));
+                line_points[2].push_back(cv::Point(j,i));
             } else if(src[k + 2 * m2] > thresh){
                 p[0]  = 255;
-                l4.push_back(cv::Point(j,i));
+                line_points[3].push_back(cv::Point(j,i));
             }
         }
         src += m0;
@@ -276,53 +274,46 @@ extern "C"  int l_extractLines(lua_State *L) {
 
 
     //TODO extract lanes here
-    cv::Vec4f line1;
-    cv::Vec4f line2;
-    cv::Vec4f line3;
-    cv::Vec4f line4;
+    std::vector<cv::Vec4f> line_fit(4);
+    THDoubleTensor_resize1d(line_tensor, 16);
+    double *lt = THDoubleTensor_data(line_tensor);
+    int pos = 0;
+    for (i = 0; i < line_fit.size(); i++) {
+        if (line_points[i].size() > min_points) {
+            fitLine(line_points[i], line_fit[i], CV_DIST_HUBER, 0, 0.01, 0.01);
 
+            lt[pos] = line_fit[i][2] - line_fit[i][0] * line_length;
+            lt[pos+1] = line_fit[i][3] - line_fit[i][1] * line_length;
+            lt[pos+2] = line_fit[i][2] + line_fit[i][0] * line_length;
+            lt[pos+3] = line_fit[i][3] + line_fit[i][1] * line_length;
+            /*
+            cv::line(dst_mat,
+                     cv::Point(line_fit[i][2] - line_fit[i][0] * line_length, line_fit[i][3] - line_fit[i][1] * line_length),
+                     cv::Point(line_fit[i][2] + line_fit[i][0] * line_length, line_fit[i][3] + line_fit[i][1] * line_length),
+                     cv::Scalar(255, 255, 255), 1);
 
-    cv::Mat lines = cv::Mat::zeros(height, width, CV_8UC3);
-
-    if(l1.size() > min_points) {
-        fitLine(l1, line1, CV_DIST_HUBER, 0, 0.01, 0.01);
-        cv::line( dst_mat,
-                  cv::Point(line1[2]-line1[0]*line_length,line1[3]-line1[1]*line_length),
-                cv::Point(line1[2]+line1[0]*line_length,line1[3]+line1[1]*line_length),
-                cv::Scalar(255,255,255), 1);
-
-    }
-    if(l2.size() > min_points) {
-        fitLine(l2, line2, CV_DIST_HUBER, 0, 0.01, 0.01);
-        cv::line( dst_mat,
-                  cv::Point(line2[2]-line2[0]*line_length,line2[3]-line2[1]*line_length),
-                cv::Point(line2[2]+line2[0]*line_length,line2[3]+line2[1]*line_length),
-                cv::Scalar(255,255,255), 1);
-
+             */
+            pos+=4;
+        }
     }
 
-    if(l3.size() > min_points) {
-        fitLine(l3, line3, CV_DIST_HUBER, 0, 0.01, 0.01);
-        cv::line( dst_mat,
-                  cv::Point(line3[2]-line3[0]*line_length,line3[3]-line3[1]*line_length),
-                cv::Point(line3[2]+line3[0]*line_length,line3[3]+line3[1]*line_length),
-                cv::Scalar(255,255,255), 1);
+    //cv::imwrite("lanes1.png", dst_mat);
 
-    }
+    /*int channels = dst_mat.channels();
 
-    if(l4.size() > min_points) {
-        fitLine(l4, line4, CV_DIST_HUBER, 0, 0.01, 0.01);
-        cv::line( dst_mat,
-                  cv::Point(line4[2]-line4[0]*line_length,line4[3]-line4[1]*line_length),
-                cv::Point(line4[2]+line4[0]*line_length,line4[3]+line4[1]*line_length),
-                cv::Scalar(255,255,255), 1);
+    unsigned char *data = (unsigned char *) dst_mat.data;
 
-    }
-
-    cv::imwrite("lanes1.png", dst_mat);
-
-
-
+    for (i = 0; i < dst_mat.rows; i++) {
+        for (j = 0, k = 0; j < dst_mat.cols; j++, k += m1) {
+            // red:
+            src[k] = data[i * dst_mat.step + j * channels + 2] / 255.;
+            // green:
+            src[k + m2] = data[i * dst_mat.step + j * channels + 1] / 255.;
+            // blue:
+            src[k + 2 * m2] = data[i * dst_mat.step + j * channels + 0] / 255.;
+        }
+        src += m0;
+    }*/
     return 0;
 
 }
