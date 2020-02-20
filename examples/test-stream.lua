@@ -25,7 +25,7 @@ while true do
    camera1:convert(-13, 0.01, a1)
    camera1:imageMult(13, a1)
 
-   camera1:extractLines(100, a1)
+   camera1:extractLines(100, 2000, 2000, a1)
 
    image.display{win=win,image={a1}}
    --image.savePNG(string.format("%s/frame_1_%05d.png",dir,f),a1)
