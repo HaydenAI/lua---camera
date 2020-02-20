@@ -278,7 +278,7 @@ extern "C"  int l_extractLines(lua_State *L) {
     cv::Vec4f line3;
     cv::Vec4f line4;
 
-    int min_points  = 300;
+    int min_points  = 2000;
 
     cv::Mat lines = cv::Mat::zeros(height, width, CV_8UC3);
 
