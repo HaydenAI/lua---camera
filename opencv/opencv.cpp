@@ -253,18 +253,17 @@ extern "C"  int l_extractLines(lua_State *L) {
 
             unsigned char * p = dst_mat.ptr(i,j);
 
-            if(src[k + 3 * m2] > thresh){
-                p[0]  = 255;
+            if(src[k] > thresh){
                 p[2]  = 255;
                 line_points[0].push_back(cv::Point(j,i));
-
-            } else if(src[k] > thresh){
-                p[2]  = 255;
-                line_points[1].push_back(cv::Point(j,i));
             } else if(src[k + m2] > thresh){
                 p[1]  = 255;
-                line_points[2].push_back(cv::Point(j,i));
+                line_points[1].push_back(cv::Point(j,i));
             } else if(src[k + 2 * m2] > thresh){
+                p[0]  = 255;
+                line_points[2].push_back(cv::Point(j,i));
+            } else if(src[k + 3 * m2] > thresh){
+                p[2]  = 255;
                 p[0]  = 255;
                 line_points[3].push_back(cv::Point(j,i));
             }
@@ -286,34 +285,17 @@ extern "C"  int l_extractLines(lua_State *L) {
             lt[pos+1] = line_fit[i][3] - line_fit[i][1] * line_length;
             lt[pos+2] = line_fit[i][2] + line_fit[i][0] * line_length;
             lt[pos+3] = line_fit[i][3] + line_fit[i][1] * line_length;
-            /*
+
             cv::line(dst_mat,
                      cv::Point(line_fit[i][2] - line_fit[i][0] * line_length, line_fit[i][3] - line_fit[i][1] * line_length),
                      cv::Point(line_fit[i][2] + line_fit[i][0] * line_length, line_fit[i][3] + line_fit[i][1] * line_length),
                      cv::Scalar(255, 255, 255), 1);
-
-             */
         }
         pos+=4;
     }
 
     //cv::imwrite("lanes1.png", dst_mat);
 
-    /*int channels = dst_mat.channels();
-
-    unsigned char *data = (unsigned char *) dst_mat.data;
-
-    for (i = 0; i < dst_mat.rows; i++) {
-        for (j = 0, k = 0; j < dst_mat.cols; j++, k += m1) {
-            // red:
-            src[k] = data[i * dst_mat.step + j * channels + 2] / 255.;
-            // green:
-            src[k + m2] = data[i * dst_mat.step + j * channels + 1] / 255.;
-            // blue:
-            src[k + 2 * m2] = data[i * dst_mat.step + j * channels + 0] / 255.;
-        }
-        src += m0;
-    }*/
     return 0;
 
 }
