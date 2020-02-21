@@ -227,12 +227,13 @@ extern "C"  int l_extractLines(lua_State *L) {
     float thresh = lua_tonumber(L, 1);
     float min_points = lua_tonumber(L, 2);
     float line_length = lua_tonumber(L, 3);
+    float huber_c = lua_tonumber(L, 4);
 
-    THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 4, "torch.DoubleTensor");
-    THDoubleTensor *line_tensor = (THDoubleTensor *) luaT_toudata(L, 5, "torch.DoubleTensor");
+    THDoubleTensor *tensor = (THDoubleTensor *) luaT_toudata(L, 5, "torch.DoubleTensor");
+    THDoubleTensor *line_tensor = (THDoubleTensor *) luaT_toudata(L, 6, "torch.DoubleTensor");
 
-    int width = lua_tonumber(L, 6);
-    int height = lua_tonumber(L, 7);
+    int width = lua_tonumber(L, 7);
+    int height = lua_tonumber(L, 8);
 
     int m0 = tensor->stride[1];
     int m1 = tensor->stride[2];
@@ -274,7 +275,7 @@ extern "C"  int l_extractLines(lua_State *L) {
     int pos = 0;
     for (i = 0; i < line_points.size(); i++) {
         if (line_points[i].size() > min_points) {
-            fitLine(line_points[i], line_fit[i], CV_DIST_HUBER, 0, 0.01, 0.01);
+            fitLine(line_points[i], line_fit[i], CV_DIST_HUBER, huber_c, 0.01, 0.01);
 
             lt[pos] = line_fit[i][2] - line_fit[i][0] * line_length;
             lt[pos+1] = line_fit[i][3] - line_fit[i][1] * line_length;

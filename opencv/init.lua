@@ -57,9 +57,9 @@ function Camera:forward(crop_ypos_ratio)
 end
 
 
-function Camera:extractLines(thresh, min_points, line_length, buffer)
+function Camera:extractLines(thresh, min_points, line_length, huber_c, buffer)
    local line_points = torch.DoubleTensor(16)
-   libcamopencv.extractLines(thresh, min_points, line_length, buffer, line_points, self.width, self.height)
+   libcamopencv.extractLines(thresh, min_points, line_length, huber_c, buffer, line_points, self.width, self.height)
    return line_points
 end
 
