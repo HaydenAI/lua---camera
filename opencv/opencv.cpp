@@ -251,16 +251,16 @@ extern "C"  int l_extractLines(lua_State *L) {
 
             unsigned char * p = dst_mat.ptr(i,j);
 
-            if(src[k] > thresh){
+            if(src[k] > thresh && j < width/2){
                 p[2]  = 255;
                 line_points[0].push_back(cv::Point(j,i));
-            } else if(src[k + m2] > thresh){
+            } else if(src[k + m2] > thresh && j < width/2 && j > width * 0.25){
                 p[1]  = 255;
                 line_points[1].push_back(cv::Point(j,i));
-            } else if(src[k + 2 * m2] > thresh){
+            } else if(src[k + 2 * m2] > thresh && j > width/2 && j < width * 0.75){
                 p[0]  = 255;
                 line_points[2].push_back(cv::Point(j,i));
-            } else if(src[k + 3 * m2] > thresh){
+            } else if(src[k + 3 * m2] > thresh && j > width/2){
                 p[2]  = 255;
                 p[0]  = 255;
                 line_points[3].push_back(cv::Point(j,i));
