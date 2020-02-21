@@ -22,7 +22,6 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
-#include <TH/TH.h>
 
 #define MAXIDX 100
 static cv::VideoCapture cap;
@@ -32,8 +31,6 @@ cv::Mat frame;
 std::thread cap_thread;
 std::mutex cap_mutex;
 std::atomic_bool done;
-
-
 
 extern "C" int l_initCam(lua_State *L) {
 
@@ -271,8 +268,6 @@ extern "C"  int l_extractLines(lua_State *L) {
         src += m0;
     }
 
-
-    //TODO extract lanes here
     std::vector<cv::Vec4f> line_fit(4);
     THDoubleTensor_resize1d(line_tensor, 16);
     double *lt = THDoubleTensor_data(line_tensor);
@@ -294,7 +289,7 @@ extern "C"  int l_extractLines(lua_State *L) {
         pos+=4;
     }
 
-    //cv::imwrite("lanes1.png", dst_mat);
+    cv::imwrite("lanes.png", dst_mat);
 
     return 0;
 
